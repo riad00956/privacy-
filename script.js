@@ -1,124 +1,175 @@
-// Initialize AOS (Animate On Scroll)
-AOS.init({
-    duration: 800,
-    easing: 'ease-in-out',
-    once: true,
-    mirror: false
+// Mobile-First JavaScript for Ultimate Flow
+// Optimized for performance and mobile experience
+
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Ultimate Flow - Mobile Optimized');
+    
+    // Initialize all components
+    initMobileMenu();
+    initTheme();
+    initTypingEffect();
+    initSmoothScroll();
+    initBackToTop();
+    initFAQ();
+    initPricingSlider();
+    initLazyLoading();
+    initFormValidation();
+    initServiceWorker();
+    initInstallPrompt();
+    initPerformanceMonitor();
+    initTouchEvents();
+    
+    // Start with loading spinner hidden
+    hideLoadingSpinner();
 });
 
-// DOM Elements
-const themeToggle = document.getElementById('themeToggle');
-const backToTop = document.getElementById('backToTop');
-const typingText = document.getElementById('typingText');
-const launchModal = document.getElementById('launchModal');
-const launchProgress = document.getElementById('launchProgress');
-const launchTerminal = document.getElementById('launchTerminal');
-const contactForm = document.getElementById('contactForm');
+// ==================== CORE FUNCTIONS ====================
 
-// Typing Animation
-const words = ['BOT HOSTING', 'TELEGRAM BOTS', 'AUTOMATION', 'AI SOLUTIONS'];
-let wordIndex = 0;
-let charIndex = 0;
-let isDeleting = false;
-let isEnd = false;
-
-function typeEffect() {
-    const currentWord = words[wordIndex];
+// Mobile Menu Toggle
+function initMobileMenu() {
+    const menuToggle = document.getElementById('menuToggle');
+    const navMenu = document.getElementById('navMenu');
+    const mobileOverlay = document.getElementById('mobileOverlay');
     
-    if (isDeleting) {
-        charIndex--;
-    } else {
-        charIndex++;
-    }
+    if (!menuToggle || !navMenu) return;
     
-    typingText.textContent = currentWord.substring(0, charIndex);
-    typingText.classList.add('gradient-text');
+    menuToggle.addEventListener('click', function() {
+        this.classList.toggle('active');
+        navMenu.classList.toggle('active');
+        mobileOverlay.classList.toggle('active');
+        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+    });
     
-    let typeSpeed = 120;
+    // Close menu when clicking overlay
+    mobileOverlay.addEventListener('click', function() {
+        menuToggle.classList.remove('active');
+        navMenu.classList.remove('active');
+        this.classList.remove('active');
+        document.body.style.overflow = '';
+    });
     
-    if (isDeleting) {
-        typeSpeed /= 2;
-    }
+    // Close menu when clicking links
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function() {
+            menuToggle.classList.remove('active');
+            navMenu.classList.remove('active');
+            mobileOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
     
-    if (!isDeleting && charIndex === currentWord.length) {
-        isEnd = true;
-        typeSpeed = 1500; // Pause at end
-    } else if (isDeleting && charIndex === 0) {
-        isEnd = true;
-        isDeleting = false;
-        wordIndex++;
-        if (wordIndex >= words.length) {
-            wordIndex = 0;
+    // Close menu on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+            menuToggle.classList.remove('active');
+            navMenu.classList.remove('active');
+            mobileOverlay.classList.remove('active');
+            document.body.style.overflow = '';
         }
-        typeSpeed = 500; // Pause before typing next word
-    }
-    
-    setTimeout(typeEffect, typeSpeed);
-    
-    if (isEnd && !isDeleting) {
-        typeSpeed = 1500;
-        isDeleting = true;
-        isEnd = false;
-    }
+    });
 }
 
 // Theme Toggle
-function toggleTheme() {
-    document.body.classList.toggle('dark-mode');
-    const icon = document.querySelector('.theme-toggle i');
-    
-    if (document.body.classList.contains('dark-mode')) {
-        icon.className = 'fas fa-sun';
-        localStorage.setItem('theme', 'dark');
-    } else {
-        icon.className = 'fas fa-moon';
-        localStorage.setItem('theme', 'light');
-    }
-}
-
-// Load Saved Theme
-function loadTheme() {
+function initTheme() {
+    const themeToggle = document.querySelector('.theme-toggle');
     const savedTheme = localStorage.getItem('theme') || 'light';
-    const icon = document.querySelector('.theme-toggle i');
     
+    // Apply saved theme
     if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        icon.className = 'fas fa-sun';
-    } else {
-        document.body.classList.remove('dark-mode');
-        icon.className = 'fas fa-moon';
+        document.documentElement.classList.add('dark-mode');
+        if (themeToggle) {
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+    }
+    
+    // Toggle theme on button click
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            const isDark = document.documentElement.classList.toggle('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            this.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            
+            // Add animation
+            this.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        });
+    }
+    
+    // Detect system theme preference
+    if (window.matchMedia) {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+        
+        // Listen for system theme changes
+        prefersDark.addEventListener('change', function(e) {
+            if (!localStorage.getItem('theme')) {
+                if (e.matches) {
+                    document.documentElement.classList.add('dark-mode');
+                } else {
+                    document.documentElement.classList.remove('dark-mode');
+                }
+            }
+        });
     }
 }
 
-// Back to Top
-function initBackToTop() {
-    window.addEventListener('scroll', () => {
-        if (window.pageYOffset > 300) {
-            backToTop.style.display = 'block';
-            setTimeout(() => {
-                backToTop.style.opacity = '1';
-                backToTop.style.transform = 'translateY(0)';
-            }, 10);
-        } else {
-            backToTop.style.opacity = '0';
-            backToTop.style.transform = 'translateY(20px)';
-            setTimeout(() => {
-                backToTop.style.display = 'none';
-            }, 300);
-        }
-    });
+// Typing Effect for Hero
+function initTypingEffect() {
+    const typingText = document.getElementById('typing-text');
+    if (!typingText) return;
     
-    backToTop.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    });
+    const words = ['BOT HOSTING', 'TELEGRAM BOTS', 'AUTOMATION', 'AI SOLUTIONS'];
+    let wordIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let isEnd = false;
+    
+    function type() {
+        const currentWord = words[wordIndex];
+        
+        if (isDeleting) {
+            charIndex--;
+        } else {
+            charIndex++;
+        }
+        
+        typingText.textContent = currentWord.substring(0, charIndex);
+        typingText.classList.add('gradient-text');
+        
+        let typeSpeed = 120;
+        
+        if (isDeleting) {
+            typeSpeed /= 2;
+        }
+        
+        if (!isDeleting && charIndex === currentWord.length) {
+            isEnd = true;
+            typeSpeed = 1500;
+        } else if (isDeleting && charIndex === 0) {
+            isEnd = true;
+            isDeleting = false;
+            wordIndex = (wordIndex + 1) % words.length;
+            typeSpeed = 500;
+        }
+        
+        setTimeout(type, typeSpeed);
+        
+        if (isEnd && !isDeleting) {
+            typeSpeed = 1500;
+            isDeleting = true;
+            isEnd = false;
+        }
+    }
+    
+    // Start typing after a short delay
+    setTimeout(type, 1000);
 }
 
-// Smooth Scroll for Navigation
+// Smooth Scroll
 function initSmoothScroll() {
+    // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
@@ -135,97 +186,214 @@ function initSmoothScroll() {
                 this.classList.add('active');
                 
                 // Smooth scroll
+                const offset = 80; // Account for fixed header
+                const targetPosition = targetElement.offsetTop - offset;
+                
                 window.scrollTo({
-                    top: targetElement.offsetTop - 80,
+                    top: targetPosition,
                     behavior: 'smooth'
                 });
             }
         });
     });
+    
+    // Scroll to specific sections
+    window.scrollToFeatures = function() {
+        const featuresSection = document.getElementById('features');
+        if (featuresSection) {
+            featuresSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+    
+    window.scrollToContact = function() {
+        const contactSection = document.getElementById('contact');
+        if (contactSection) {
+            contactSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 }
 
-// Active Navigation on Scroll
-function initActiveNavOnScroll() {
-    const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-link');
+// Back to Top Button
+function initBackToTop() {
+    const backToTop = document.getElementById('backToTop');
+    if (!backToTop) return;
     
-    window.addEventListener('scroll', () => {
-        let current = '';
-        
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            
-            if (scrollY >= (sectionTop - 150)) {
-                current = section.getAttribute('id');
-            }
-        });
-        
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${current}`) {
-                link.classList.add('active');
-            }
+    // Show/hide based on scroll position
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+            backToTop.classList.add('visible');
+        } else {
+            backToTop.classList.remove('visible');
+        }
+    });
+    
+    // Scroll to top when clicked
+    backToTop.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
         });
     });
 }
 
-// Launch Bot Functionality
-function launchBot() {
-    launchModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    
-    // Reset progress
-    launchProgress.style.width = '0%';
-    launchTerminal.textContent = '> Waiting for launch command...';
+// FAQ Accordion
+function initFAQ() {
+    document.querySelectorAll('.faq-question').forEach(question => {
+        question.addEventListener('click', function() {
+            const item = this.parentElement;
+            const isActive = item.classList.contains('active');
+            
+            // Close all other items
+            document.querySelectorAll('.faq-item').forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.classList.remove('active');
+                }
+            });
+            
+            // Toggle current item
+            item.classList.toggle('active', !isActive);
+        });
+    });
 }
 
-function closeModal() {
-    launchModal.classList.remove('active');
-    document.body.style.overflow = 'auto';
-}
-
-function proceedLaunch() {
-    const steps = [
-        { progress: 25, message: '> Initializing @zen_xbot deployment...' },
-        { progress: 50, message: '> Connecting to Telegram API... ✓' },
-        { progress: 75, message: '> Deploying bot files to server... ✓' },
-        { progress: 90, message: '> Starting bot services... ✓' },
-        { progress: 100, message: '> ✅ @zen_xbot is now LIVE and running!\n> You can access it at: https://t.me/zen_xbot' }
-    ];
+// Pricing Slider
+function initPricingSlider() {
+    const pricingCards = document.getElementById('pricingCards');
+    const dots = document.querySelectorAll('.slider-dots .dot');
     
-    let currentStep = 0;
+    if (!pricingCards || !dots.length) return;
     
-    const simulateLaunch = () => {
-        if (currentStep < steps.length) {
-            const step = steps[currentStep];
-            launchProgress.style.width = `${step.progress}%`;
-            launchTerminal.textContent += `\n${step.message}`;
-            launchTerminal.scrollTop = launchTerminal.scrollHeight;
-            currentStep++;
-            setTimeout(simulateLaunch, 800);
-        } else {
-            // Enable launch button
-            const launchBtn = document.querySelector('.modal-footer .btn-primary');
-            launchBtn.innerHTML = '<i class="fas fa-external-link-alt"></i> Open Bot';
-            launchBtn.onclick = () => {
-                window.open('https://t.me/zen_xbot', '_blank');
-                closeModal();
-            };
+    let currentSlide = 0;
+    
+    // Initialize dots
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', function() {
+            goToSlide(index);
+        });
+    });
+    
+    function goToSlide(index) {
+        currentSlide = index;
+        const cardWidth = pricingCards.children[0].offsetWidth + 16; // width + gap
+        pricingCards.scrollTo({
+            left: cardWidth * index,
+            behavior: 'smooth'
+        });
+        updateDots();
+    }
+    
+    function updateDots() {
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentSlide);
+        });
+    }
+    
+    // Auto-scroll on swipe
+    let startX = 0;
+    let isScrolling = false;
+    
+    pricingCards.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX;
+        isScrolling = true;
+    });
+    
+    pricingCards.addEventListener('touchmove', function(e) {
+        if (!isScrolling) return;
+        e.preventDefault();
+    });
+    
+    pricingCards.addEventListener('touchend', function(e) {
+        if (!isScrolling) return;
+        
+        const endX = e.changedTouches[0].clientX;
+        const diff = startX - endX;
+        
+        // Minimum swipe distance
+        if (Math.abs(diff) > 50) {
+            if (diff > 0 && currentSlide < dots.length - 1) {
+                goToSlide(currentSlide + 1);
+            } else if (diff < 0 && currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
         }
-    };
+        
+        isScrolling = false;
+    });
     
-    simulateLaunch();
+    // Handle scroll events
+    pricingCards.addEventListener('scroll', function() {
+        const scrollPosition = this.scrollLeft;
+        const cardWidth = this.children[0].offsetWidth + 16;
+        const newSlide = Math.round(scrollPosition / cardWidth);
+        
+        if (newSlide !== currentSlide) {
+            currentSlide = newSlide;
+            updateDots();
+        }
+    });
 }
 
-// Form Submission
-if (contactForm) {
+// Lazy Loading for images
+function initLazyLoading() {
+    const lazyImages = document.querySelectorAll('img.lazy');
+    
+    if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    img.classList.add('loaded');
+                    imageObserver.unobserve(img);
+                }
+            });
+        });
+        
+        lazyImages.forEach(function(img) {
+            imageObserver.observe(img);
+        });
+    } else {
+        // Fallback for older browsers
+        lazyImages.forEach(function(img) {
+            img.src = img.dataset.src;
+            img.classList.add('loaded');
+        });
+    }
+}
+
+// Form Validation
+function initFormValidation() {
+    const contactForm = document.getElementById('contactForm');
+    if (!contactForm) return;
+    
     contactForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
+        // Get form data
         const formData = new FormData(this);
         const submitBtn = this.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
+        
+        // Validate form
+        let isValid = true;
+        const requiredFields = this.querySelectorAll('[required]');
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                showError(field, 'This field is required');
+            } else if (field.type === 'email' && !isValidEmail(field.value)) {
+                isValid = false;
+                showError(field, 'Please enter a valid email');
+            } else {
+                clearError(field);
+            }
+        });
+        
+        if (!isValid) {
+            showToast('Please fill in all required fields correctly', 'error');
+            return;
+        }
         
         // Show loading state
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
@@ -234,152 +402,313 @@ if (contactForm) {
         // Simulate API call
         setTimeout(() => {
             // Show success message
-            const alert = document.createElement('div');
-            alert.className = 'alert success';
-            alert.innerHTML = `
-                <i class="fas fa-check-circle"></i>
-                <span>Message sent successfully! We'll get back to you soon.</span>
-            `;
+            showToast('Message sent successfully! We\'ll get back to you soon.', 'success');
             
-            // Add styles for alert
-            alert.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: var(--success);
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: 10px;
-                display: flex;
-                align-items: center;
-                gap: 0.8rem;
-                z-index: 1000;
-                animation: slideIn 0.3s ease;
-            `;
-            
-            document.body.appendChild(alert);
-            
-            // Remove alert after 5 seconds
-            setTimeout(() => {
-                alert.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => alert.remove(), 300);
-            }, 5000);
-            
-            // Reset form and button
+            // Reset form
             this.reset();
+            
+            // Reset button
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
         }, 2000);
     });
+    
+    // Helper functions
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+    
+    function showError(field, message) {
+        const formGroup = field.closest('.form-group');
+        if (!formGroup) return;
+        
+        let errorElement = formGroup.querySelector('.error-message');
+        if (!errorElement) {
+            errorElement = document.createElement('div');
+            errorElement.className = 'error-message';
+            formGroup.appendChild(errorElement);
+        }
+        
+        errorElement.textContent = message;
+        errorElement.style.cssText = `
+            color: var(--danger);
+            font-size: var(--font-size-sm);
+            margin-top: var(--spacing-xs);
+        `;
+        
+        field.style.borderColor = 'var(--danger)';
+    }
+    
+    function clearError(field) {
+        const formGroup = field.closest('.form-group');
+        if (!formGroup) return;
+        
+        const errorElement = formGroup.querySelector('.error-message');
+        if (errorElement) {
+            errorElement.remove();
+        }
+        
+        field.style.borderColor = '';
+    }
 }
 
-// Start Hosting Button
-function startHosting() {
-    // Show loading animation
-    const button = event.target.closest('.btn-primary');
+// Service Worker for PWA
+function initServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                console.log('ServiceWorker registration successful:', registration.scope);
+            }).catch(function(error) {
+                console.log('ServiceWorker registration failed:', error);
+            });
+        });
+    }
+}
+
+// Install Prompt for PWA
+function initInstallPrompt() {
+    let deferredPrompt;
+    const installPrompt = document.getElementById('installPrompt');
+    
+    window.addEventListener('beforeinstallprompt', function(e) {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+        
+        // Stash the event so it can be triggered later
+        deferredPrompt = e;
+        
+        // Show the install prompt
+        setTimeout(() => {
+            if (installPrompt) {
+                installPrompt.classList.add('show');
+            }
+        }, 5000);
+    });
+    
+    window.installPWA = function() {
+        if (!deferredPrompt) return;
+        
+        // Show the install prompt
+        deferredPrompt.prompt();
+        
+        // Wait for the user to respond to the prompt
+        deferredPrompt.userChoice.then(function(choiceResult) {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+            } else {
+                console.log('User dismissed the install prompt');
+            }
+            
+            // Clear the deferredPrompt variable
+            deferredPrompt = null;
+            
+            // Hide the install prompt
+            hideInstallPrompt();
+        });
+    };
+    
+    window.hideInstallPrompt = function() {
+        if (installPrompt) {
+            installPrompt.classList.remove('show');
+        }
+    };
+    
+    // Hide prompt when installing via other methods
+    window.addEventListener('appinstalled', function() {
+        console.log('PWA was installed');
+        hideInstallPrompt();
+    });
+}
+
+// Performance Monitoring
+function initPerformanceMonitor() {
+    // Log Core Web Vitals
+    if ('PerformanceObserver' in window) {
+        try {
+            // LCP (Largest Contentful Paint)
+            const lcpObserver = new PerformanceObserver((entryList) => {
+                const entries = entryList.getEntries();
+                const lastEntry = entries[entries.length - 1];
+                console.log('LCP:', lastEntry.renderTime || lastEntry.loadTime);
+            });
+            lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+            
+            // FID (First Input Delay)
+            const fidObserver = new PerformanceObserver((entryList) => {
+                const entries = entryList.getEntries();
+                entries.forEach(entry => {
+                    console.log('FID:', entry.processingStart - entry.startTime);
+                });
+            });
+            fidObserver.observe({ type: 'first-input', buffered: true });
+            
+            // CLS (Cumulative Layout Shift)
+            let clsValue = 0;
+            let clsEntries = [];
+            
+            const clsObserver = new PerformanceObserver((entryList) => {
+                for (const entry of entryList.getEntries()) {
+                    if (!entry.hadRecentInput) {
+                        clsValue += entry.value;
+                        clsEntries.push(entry);
+                    }
+                }
+                console.log('CLS:', clsValue);
+            });
+            
+            clsObserver.observe({ type: 'layout-shift', buffered: true });
+        } catch (e) {
+            console.log('Performance monitoring not supported:', e);
+        }
+    }
+}
+
+// Touch Event Optimizations
+function initTouchEvents() {
+    // Prevent double-tap zoom on buttons
+    document.addEventListener('touchstart', function(e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    // Add touch feedback
+    document.addEventListener('touchstart', function() {
+        // Add active class to touched element
+    }, { passive: true });
+    
+    document.addEventListener('touchend', function() {
+        // Remove active class
+    }, { passive: true });
+}
+
+// ==================== APP FUNCTIONS ====================
+
+// Launch Bot Functionality
+window.launchBot = function() {
+    const modal = document.getElementById('launchModal');
+    const launchProgress = document.getElementById('launchProgress');
+    const progressText = document.getElementById('progressText');
+    const terminalOutput = document.getElementById('terminalOutput');
+    
+    if (!modal) return;
+    
+    // Show modal
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // Reset progress
+    if (launchProgress) launchProgress.style.width = '0%';
+    if (progressText) progressText.textContent = 'Initializing...';
+    if (terminalOutput) terminalOutput.textContent = '> Waiting for launch command...';
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+    
+    // Close on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+};
+
+window.startLaunch = function() {
+    const launchProgress = document.getElementById('launchProgress');
+    const progressText = document.getElementById('progressText');
+    const terminalOutput = document.getElementById('terminalOutput');
+    
+    if (!launchProgress || !progressText || !terminalOutput) return;
+    
+    const steps = [
+        { progress: 10, text: 'Initializing @zen_xbot...', log: '> Initializing bot deployment system...' },
+        { progress: 30, text: 'Checking requirements...', log: '> Checking system requirements... ✓' },
+        { progress: 50, text: 'Connecting to Telegram...', log: '> Connecting to Telegram API... ✓' },
+        { progress: 70, text: 'Uploading bot files...', log: '> Uploading bot files to server... ✓' },
+        { progress: 90, text: 'Starting services...', log: '> Starting bot services... ✓' },
+        { progress: 100, text: 'Launch complete!', log: '> ✅ @zen_xbot is now LIVE!\n> Access at: https://t.me/zen_xbot' }
+    ];
+    
+    let currentStep = 0;
+    
+    function nextStep() {
+        if (currentStep >= steps.length) {
+            // Update button to open bot
+            const launchBtn = document.querySelector('.modal-footer .btn-primary');
+            if (launchBtn) {
+                launchBtn.innerHTML = '<i class="fab fa-telegram"></i> Open @zen_xbot';
+                launchBtn.onclick = function() {
+                    window.open('https://t.me/zen_xbot', '_blank');
+                    closeModal();
+                };
+            }
+            return;
+        }
+        
+        const step = steps[currentStep];
+        
+        // Update progress
+        launchProgress.style.width = step.progress + '%';
+        progressText.textContent = step.text;
+        
+        // Update terminal
+        terminalOutput.textContent += '\n' + step.log;
+        terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        
+        currentStep++;
+        
+        // Schedule next step
+        setTimeout(nextStep, 800);
+    }
+    
+    // Start the process
+    nextStep();
+};
+
+window.closeModal = function() {
+    const modal = document.getElementById('launchModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+};
+
+// Start Hosting
+window.startHosting = function() {
+    const button = event?.target || document.querySelector('.btn-primary');
     const originalText = button.innerHTML;
     
     button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirecting...';
     button.disabled = true;
     
-    // Simulate API call and redirect
+    // Simulate API call
     setTimeout(() => {
+        // Open bot in new tab
         window.open('https://t.me/zen_xbot', '_blank');
         
-        // Reset button after delay
+        // Reset button
         setTimeout(() => {
             button.innerHTML = originalText;
             button.disabled = false;
-        }, 2000);
-    }, 1000);
-}
+        }, 1000);
+    }, 500);
+};
 
-// View Demo
-function viewDemo() {
-    // Create demo modal
-    const demoModal = document.createElement('div');
-    demoModal.className = 'modal active';
-    demoModal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-play-circle"></i> Platform Demo</h3>
-                <button class="close-modal" onclick="this.closest('.modal').remove(); document.body.style.overflow='auto'">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div style="text-align: center; padding: 2rem;">
-                    <i class="fas fa-robot" style="font-size: 4rem; color: var(--primary); margin-bottom: 1rem;"></i>
-                    <h4 style="margin-bottom: 1rem; color: var(--dark);">Coming Soon!</h4>
-                    <p style="color: var(--gray); margin-bottom: 2rem;">
-                        The interactive demo is under development. In the meantime, you can:
-                    </p>
-                    <div style="display: flex; gap: 1rem; justify-content: center;">
-                        <button class="btn-primary" onclick="window.open('https://t.me/zen_xbot', '_blank')">
-                            <i class="fab fa-telegram"></i> Try Live Bot
-                        </button>
-                        <button class="btn-outline" onclick="this.closest('.modal').remove(); document.body.style.overflow='auto'">
-                            Close
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(demoModal);
-    document.body.style.overflow = 'hidden';
-}
+// Bot Management Functions
+window.manageBot = function(button) {
+    // Show bot management options
+    showToast('Bot management options coming soon!', 'info');
+};
 
-// Open Dashboard
-function openDashboard() {
-    // Show loading
-    const button = event.target.closest('.btn-primary');
-    const originalText = button.innerHTML;
-    
-    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opening...';
-    
-    // Simulate dashboard loading
-    setTimeout(() => {
-        // In a real app, this would redirect to the dashboard
-        // For now, show a message
-        const alert = document.createElement('div');
-        alert.className = 'alert info';
-        alert.innerHTML = `
-            <i class="fas fa-info-circle"></i>
-            <span>Dashboard will be available after login. Please use @zen_xbot for authentication.</span>
-        `;
-        
-        alert.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--primary);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-            max-width: 400px;
-        `;
-        
-        document.body.appendChild(alert);
-        
-        // Remove alert
-        setTimeout(() => {
-            alert.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => alert.remove(), 300);
-        }, 5000);
-        
-        button.innerHTML = originalText;
-    }, 1000);
-}
-
-// Start Bot from Dashboard
-function startBot(button) {
+window.startBot = function(button) {
     const botItem = button.closest('.bot-item');
-    const statusBadge = botItem.querySelector('.status-badge');
+    const statusDot = botItem.querySelector('.status');
+    
+    if (!botItem || !statusDot) return;
     
     // Show loading
     button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -387,212 +716,219 @@ function startBot(button) {
     
     // Simulate bot starting
     setTimeout(() => {
-        statusBadge.textContent = 'Running';
-        statusBadge.style.background = 'var(--success)';
+        // Update status
+        statusDot.classList.remove('offline');
+        statusDot.classList.add('online');
         
-        // Remove start button and add uptime
-        button.remove();
+        // Update button
+        button.innerHTML = '<i class="fas fa-cog"></i>';
+        button.onclick = function() { manageBot(this); };
+        button.disabled = false;
         
-        const uptimeSpan = document.createElement('span');
-        uptimeSpan.className = 'uptime';
-        uptimeSpan.textContent = 'Uptime: 0m';
-        
-        botItem.querySelector('.bot-status').appendChild(uptimeSpan);
-        
-        // Simulate uptime counter
-        let minutes = 0;
-        const uptimeInterval = setInterval(() => {
-            minutes++;
-            uptimeSpan.textContent = `Uptime: ${minutes}m`;
-            
-            // Stop after 5 minutes for demo
-            if (minutes >= 5) {
-                clearInterval(uptimeInterval);
-            }
-        }, 1000); // Update every second (for demo)
-    }, 2000);
-}
+        // Show success message
+        showToast('Bot started successfully!', 'success');
+    }, 1500);
+};
 
-// Initialize everything when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Start typing effect
-    setTimeout(typeEffect, 1000);
+window.deployNewBot = function() {
+    showToast('New bot deployment feature coming soon!', 'info');
+};
+
+window.openAnalytics = function() {
+    showToast('Analytics dashboard coming soon!', 'info');
+};
+
+window.openSettings = function() {
+    showToast('Settings panel coming soon!', 'info');
+};
+
+// ==================== UTILITY FUNCTIONS ====================
+
+// Toast Notifications
+function showToast(message, type = 'info') {
+    // Remove existing toasts
+    const existingToasts = document.querySelectorAll('.toast');
+    existingToasts.forEach(toast => toast.remove());
     
-    // Load saved theme
-    loadTheme();
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
     
-    // Initialize back to top
-    initBackToTop();
+    // Set icon based on type
+    let icon = 'info-circle';
+    if (type === 'success') icon = 'check-circle';
+    if (type === 'error') icon = 'exclamation-circle';
+    if (type === 'warning') icon = 'exclamation-triangle';
     
-    // Initialize smooth scroll
-    initSmoothScroll();
+    toast.innerHTML = `
+        <i class="fas fa-${icon}"></i>
+        <span>${message}</span>
+    `;
     
-    // Initialize active nav on scroll
-    initActiveNavOnScroll();
+    // Add styles
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        padding: var(--spacing-md) var(--spacing-lg);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        z-index: 9999;
+        animation: toastIn 0.3s ease;
+        max-width: 350px;
+    `;
     
-    // Add CSS for alerts
+    // Add animation
     const style = document.createElement('style');
     style.textContent = `
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-        
-        .alert {
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-        
-        .alert.info {
-            background: var(--primary);
-        }
-        
-        .alert.success {
-            background: var(--success);
-        }
-        
-        .alert i {
-            font-size: 1.2rem;
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
         }
     `;
     document.head.appendChild(style);
     
-    // Add floating particles
-    createParticles();
-});
-
-// Create floating particles for background
-function createParticles() {
-    const particlesContainer = document.querySelector('.particles');
+    document.body.appendChild(toast);
     
-    for (let i = 0; i < 50; i++) {
-        const particle = document.createElement('div');
-        particle.style.cssText = `
-            position: absolute;
-            width: ${Math.random() * 4 + 1}px;
-            height: ${Math.random() * 4 + 1}px;
-            background: ${Math.random() > 0.5 ? 'var(--primary)' : 'var(--secondary)'};
-            border-radius: 50%;
-            opacity: ${Math.random() * 0.3 + 0.1};
-            top: ${Math.random() * 100}%;
-            left: ${Math.random() * 100}%;
-            animation: floatParticle ${Math.random() * 20 + 10}s infinite linear;
-        `;
-        
-        // Add CSS for particle animation
-        if (!document.querySelector('#particle-animation')) {
-            const particleStyle = document.createElement('style');
-            particleStyle.id = 'particle-animation';
-            particleStyle.textContent = `
-                @keyframes floatParticle {
-                    0% { transform: translate(0, 0); }
-                    25% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px); }
-                    50% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px); }
-                    75% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px); }
-                    100% { transform: translate(0, 0); }
-                }
-            `;
-            document.head.appendChild(particleStyle);
-        }
-        
-        particlesContainer.appendChild(particle);
-    }
-}
-
-// Performance monitoring
-let lastScrollTop = 0;
-window.addEventListener('scroll', function() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        toast.style.animation = 'toastOut 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
     
-    // Add parallax effect to background
-    const particles = document.querySelector('.particles');
-    if (particles) {
-        particles.style.transform = `translateY(${scrollTop * 0.2}px)`;
-    }
-    
-    lastScrollTop = scrollTop;
-});
-
-// Keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-    // Ctrl/Cmd + K to search (placeholder)
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        alert('Search functionality coming soon!');
-    }
-    
-    // Escape to close modals
-    if (e.key === 'Escape') {
-        const activeModal = document.querySelector('.modal.active');
-        if (activeModal) {
-            closeModal();
-        }
-    }
-});
-
-// Service worker registration for PWA (optional)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(error => {
-            console.log('ServiceWorker registration failed:', error);
-        });
+    // Remove on click
+    toast.addEventListener('click', function() {
+        this.style.animation = 'toastOut 0.3s ease';
+        setTimeout(() => this.remove(), 300);
     });
 }
 
-// Add animation to feature cards on hover
-document.querySelectorAll('.feature-card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-10px) scale(1.02)';
-    });
-    
-    card.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0) scale(1)';
-    });
-});
-
-// Add ripple effect to buttons
-document.addEventListener('click', function(e) {
-    if (e.target.closest('.btn-primary, .btn-secondary, .btn-outline, .nav-btn')) {
-        const button = e.target.closest('.btn-primary, .btn-secondary, .btn-outline, .nav-btn');
-        const ripple = document.createElement('span');
-        const rect = button.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = e.clientX - rect.left - size / 2;
-        const y = e.clientY - rect.top - size / 2;
-        
-        ripple.style.cssText = `
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-            transform: scale(0);
-            animation: ripple 0.6s linear;
-            width: ${size}px;
-            height: ${size}px;
-            top: ${y}px;
-            left: ${x}px;
-            pointer-events: none;
-        `;
-        
-        button.style.position = 'relative';
-        button.style.overflow = 'hidden';
-        button.appendChild(ripple);
-        
-        setTimeout(() => ripple.remove(), 600);
+// Loading Spinner
+function showLoadingSpinner() {
+    const spinner = document.getElementById('loadingSpinner');
+    if (spinner) {
+        spinner.style.display = 'flex';
     }
-});
+}
 
-// Add ripple animation CSS
-const rippleStyle = document.createElement('style');
-rippleStyle.textContent = `
-    @keyframes ripple {
-        to {
-            transform: scale(4);
-            opacity: 0;
+function hideLoadingSpinner() {
+    const spinner = document.getElementById('loadingSpinner');
+    if (spinner) {
+        spinner.style.display = 'none';
+    }
+}
+
+// Performance optimization: Debounce function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Performance optimization: Throttle function
+function throttle(func, limit) {
+    let inThrottle;
+    return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
         }
-    }
-`;
-document.head.appendChild(rippleStyle);
+    };
+}
+
+// ==================== PERFORMANCE OPTIMIZATIONS ====================
+
+// Optimize scroll events
+window.addEventListener('scroll', throttle(function() {
+    // Your scroll-related code here
+}, 100));
+
+// Optimize resize events
+window.addEventListener('resize', debounce(function() {
+    // Your resize-related code here
+}, 250));
+
+// Preload critical resources
+function preloadCriticalResources() {
+    const criticalImages = [
+        'logo.png'
+        // Add other critical images here
+    ];
+    
+    criticalImages.forEach(src => {
+        const img = new Image();
+        img.src = src;
+    });
+}
+
+// Initialize preloading when page is idle
+if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(preloadCriticalResources);
+} else {
+    setTimeout(preloadCriticalResources, 1000);
+}
+
+// ==================== ERROR HANDLING ====================
+
+// Global error handler
+window.addEventListener('error', function(e) {
+    console.error('Global error:', e.error);
+    // You can send errors to your analytics service here
+});
+
+// Unhandled promise rejection handler
+window.addEventListener('unhandledrejection', function(e) {
+    console.error('Unhandled promise rejection:', e.reason);
+});
+
+// ==================== OFFLINE SUPPORT ====================
+
+// Check online/offline status
+window.addEventListener('online', function() {
+    showToast('You are back online!', 'success');
+});
+
+window.addEventListener('offline', function() {
+    showToast('You are offline. Some features may not work.', 'warning');
+});
+
+// ==================== BROWSER COMPATIBILITY ====================
+
+// Check for modern browser features
+function checkBrowserCompatibility() {
+    const features = {
+        'ES6': 'Promise' in window,
+        'Fetch': 'fetch' in window,
+        'ServiceWorker': 'serviceWorker' in navigator,

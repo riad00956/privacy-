@@ -2,509 +2,897 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ultimate Flow - Cyber Bot Hosting</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Remove heavy CSS libraries -->
+    <!-- Only load what's absolutely necessary -->
+    
+    <!-- Preconnect for faster loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" href="style.css" as="style">
+    <link rel="preload" href="script.js" as="script">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="logo.png">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Critical CSS (inline for faster render) -->
+    <style>
+        /* Critical CSS for above-the-fold content */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeSpeed;
+        }
+        
+        /* Ensure tap targets are large enough */
+        button, 
+        .nav-link,
+        .btn-primary,
+        .btn-secondary,
+        .btn-outline {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* Prevent horizontal scroll */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Smooth scrolling for mobile */
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Hide scrollbar for better UX */
+        ::-webkit-scrollbar {
+            width: 0;
+            background: transparent;
+        }
+        
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
 </head>
 <body>
-    <!-- Background Animation -->
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <!-- Background Animation (Simplified for mobile) -->
     <div class="background-animation">
         <div class="particles"></div>
-        <div class="floating-bubbles"></div>
-        <div class="cyber-grid"></div>
     </div>
 
-    <!-- Navigation -->
+    <!-- Mobile Navigation -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo-container">
-                <img src="logo.png" alt="Ultimate Flow Logo" class="logo">
+                <!-- Lazy loaded logo -->
+                <img 
+                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🤖%3C/text%3E%3C/svg%3E" 
+                    data-src="logo.png" 
+                    alt="Ultimate Flow Logo" 
+                    class="logo lazy"
+                    width="50"
+                    height="50"
+                    loading="lazy"
+                >
                 <div class="logo-text">
                     <h1>ULTIMATE <span class="gradient-text">FLOW</span></h1>
                     <p class="tagline">Cyber Bot Hosting</p>
                 </div>
             </div>
             
-            <div class="nav-menu">
-                <a href="#home" class="nav-link active"><i class="fas fa-home"></i> Home</a>
-                <a href="#features" class="nav-link"><i class="fas fa-star"></i> Features</a>
-                <a href="#pricing" class="nav-link"><i class="fas fa-tags"></i> Pricing</a>
-                <a href="#dashboard" class="nav-link"><i class="fas fa-rocket"></i> Dashboard</a>
-                <a href="#contact" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+            <!-- Mobile Menu Toggle -->
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            
+            <!-- Desktop Navigation -->
+            <div class="nav-menu" id="navMenu">
+                <a href="#home" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#features" class="nav-link">
+                    <i class="fas fa-star"></i>
+                    <span>Features</span>
+                </a>
+                <a href="#pricing" class="nav-link">
+                    <i class="fas fa-tags"></i>
+                    <span>Pricing</span>
+                </a>
+                <a href="#dashboard" class="nav-link">
+                    <i class="fas fa-rocket"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#contact" class="nav-link">
+                    <i class="fas fa-envelope"></i>
+                    <span>Contact</span>
+                </a>
+                
+                <!-- Mobile launch button inside menu -->
+                <button class="launch-btn mobile-only" onclick="launchBot()">
+                    <i class="fas fa-rocket"></i>
+                    <span>Launch Bot</span>
+                </button>
             </div>
             
-            <button class="launch-btn" onclick="launchBot()">
+            <!-- Desktop launch button -->
+            <button class="launch-btn desktop-only" onclick="launchBot()">
                 <i class="fas fa-rocket"></i>
                 <span>Launch Bot</span>
             </button>
             
-            <button class="theme-toggle" onclick="toggleTheme()">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
                 <i class="fas fa-moon"></i>
             </button>
         </div>
+        
+        <!-- Mobile Menu Overlay -->
+        <div class="mobile-menu-overlay" id="mobileOverlay"></div>
     </nav>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero-section">
-        <div class="hero-container">
-            <div class="hero-content animate__animated animate__fadeInLeft">
-                <h2 class="hero-title">
-                    <span class="gradient-text">Revolutionize</span> Your
-                    <br>
-                    <span class="typing-text" id="typing-text"></span>
-                </h2>
-                <p class="hero-description">
-                    Experience the future of bot hosting with <strong>Ultimate Flow</strong>. 
-                    Deploy, manage, and scale your Telegram bots with unmatched speed, 
-                    security, and reliability.
-                </p>
-                
-                <div class="hero-stats">
-                    <div class="stat-box">
-                        <h3>99.9%</h3>
-                        <p>Uptime</p>
-                    </div>
-                    <div class="stat-box">
-                        <h3>⚡</h3>
-                        <p>Lightning Fast</p>
-                    </div>
-                    <div class="stat-box">
-                        <h3>🛡️</h3>
-                        <p>Military Grade Security</p>
-                    </div>
-                </div>
-                
-                <div class="hero-buttons">
-                    <button class="btn-primary" onclick="startHosting()">
-                        <i class="fas fa-play"></i> Start Hosting
-                    </button>
-                    <button class="btn-secondary" onclick="viewDemo()">
-                        <i class="fas fa-eye"></i> View Demo
-                    </button>
-                </div>
-            </div>
-            
-            <div class="hero-image animate__animated animate__fadeInRight">
-                <div class="floating-card">
-                    <div class="card-header">
-                        <h4><i class="fas fa-robot"></i> Bot Control Panel</h4>
-                        <div class="status-indicator active"></div>
-                    </div>
-                    <div class="card-body">
-                        <div class="bot-stats">
-                            <div class="stat">
-                                <i class="fas fa-microchip"></i>
-                                <span>CPU: 24%</span>
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section id="home" class="hero-section">
+            <div class="container">
+                <div class="hero-container">
+                    <div class="hero-content">
+                        <h1 class="hero-title">
+                            <span class="gradient-text">Revolutionize</span> Your
+                            <br>
+                            <span class="typing-text" id="typing-text"></span>
+                        </h1>
+                        <p class="hero-description">
+                            Experience the future of bot hosting with <strong>Ultimate Flow</strong>. 
+                            Deploy, manage, and scale your Telegram bots with unmatched speed.
+                        </p>
+                        
+                        <!-- Mobile Optimized Stats -->
+                        <div class="hero-stats">
+                            <div class="stat-card">
+                                <div class="stat-icon">🚀</div>
+                                <div class="stat-number">99.9%</div>
+                                <div class="stat-label">Uptime</div>
                             </div>
-                            <div class="stat">
-                                <i class="fas fa-memory"></i>
-                                <span>RAM: 512MB</span>
+                            <div class="stat-card">
+                                <div class="stat-icon">⚡</div>
+                                <div class="stat-number">0.2s</div>
+                                <div class="stat-label">Response</div>
                             </div>
-                            <div class="stat">
-                                <i class="fas fa-bolt"></i>
-                                <span>Uptime: 99.9%</span>
+                            <div class="stat-card">
+                                <div class="stat-icon">🛡️</div>
+                                <div class="stat-number">100%</div>
+                                <div class="stat-label">Secure</div>
                             </div>
                         </div>
-                        <div class="terminal">
-                            <div class="terminal-header">
-                                <span>Live Logs</span>
+                        
+                        <!-- Hero Buttons (Stacked on mobile) -->
+                        <div class="hero-buttons">
+                            <button class="btn-primary btn-block" onclick="startHosting()">
+                                <i class="fas fa-play"></i> Start Hosting Free
+                            </button>
+                            <button class="btn-secondary btn-block" onclick="scrollToFeatures()">
+                                <i class="fas fa-eye"></i> View Features
+                            </button>
+                        </div>
+                        
+                        <!-- App Store Badges -->
+                        <div class="store-badges">
+                            <div class="badge">
+                                <i class="fab fa-google-play"></i>
+                                <div>
+                                    <span>Get it on</span>
+                                    <strong>Play Store</strong>
+                                </div>
                             </div>
-                            <div class="terminal-body">
-                                <pre>> Bot deployed successfully
-> Connected to Telegram API
-> Monitoring enabled
-> Ready to receive commands</pre>
+                            <div class="badge">
+                                <i class="fab fa-apple"></i>
+                                <div>
+                                    <span>Download on</span>
+                                    <strong>App Store</strong>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section id="features" class="features-section">
-        <div class="section-header">
-            <h2 class="section-title">Premium <span class="gradient-text">Features</span></h2>
-            <p class="section-subtitle">Everything you need for perfect bot hosting</p>
-        </div>
-        
-        <div class="features-grid">
-            <div class="feature-card" data-aos="fade-up">
-                <div class="feature-icon">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <h3>Military Security</h3>
-                <p>End-to-end encryption, DDoS protection, and secure isolated environments for your bots.</p>
-            </div>
-            
-            <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
-                <div class="feature-icon">
-                    <i class="fas fa-bolt"></i>
-                </div>
-                <h3>Lightning Speed</h3>
-                <p>Global CDN, optimized servers, and instant deployment for maximum performance.</p>
-            </div>
-            
-            <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="feature-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <h3>Live Analytics</h3>
-                <p>Real-time monitoring, detailed statistics, and performance insights for your bots.</p>
-            </div>
-            
-            <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
-                <div class="feature-icon">
-                    <i class="fas fa-code"></i>
-                </div>
-                <h3>Auto Deployment</h3>
-                <p>One-click deployment, automatic updates, and seamless integration with GitHub.</p>
-            </div>
-            
-            <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
-                <div class="feature-icon">
-                    <i class="fas fa-server"></i>
-                </div>
-                <h3>24/7 Uptime</h3>
-                <p>99.9% SLA guarantee, automatic failover, and redundant infrastructure.</p>
-            </div>
-            
-            <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
-                <div class="feature-icon">
-                    <i class="fas fa-headset"></i>
-                </div>
-                <h3>Priority Support</h3>
-                <p>24/7 expert support, Telegram group access, and dedicated technical assistance.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pricing Section -->
-    <section id="pricing" class="pricing-section">
-        <div class="section-header">
-            <h2 class="section-title">Simple <span class="gradient-text">Pricing</span></h2>
-            <p class="section-subtitle">Choose the perfect plan for your needs</p>
-        </div>
-        
-        <div class="pricing-cards">
-            <div class="pricing-card" data-aos="flip-left">
-                <div class="pricing-header">
-                    <h3>STARTER</h3>
-                    <div class="price">
-                        <span class="currency">$</span>
-                        <span class="amount">0</span>
-                        <span class="period">/month</span>
-                    </div>
-                    <p>Perfect for beginners</p>
-                </div>
-                <ul class="features-list">
-                    <li><i class="fas fa-check"></i> 1 Bot Deployment</li>
-                    <li><i class="fas fa-check"></i> 100MB Storage</li>
-                    <li><i class="fas fa-check"></i> Basic Support</li>
-                    <li><i class="fas fa-check"></i> 95% Uptime</li>
-                    <li><i class="fas fa-check"></i> Community Access</li>
-                </ul>
-                <button class="btn-outline">Get Started</button>
-            </div>
-            
-            <div class="pricing-card popular" data-aos="flip-up">
-                <div class="popular-badge">MOST POPULAR</div>
-                <div class="pricing-header">
-                    <h3>PRO</h3>
-                    <div class="price">
-                        <span class="currency">$</span>
-                        <span class="amount">9.99</span>
-                        <span class="period">/month</span>
-                    </div>
-                    <p>For growing projects</p>
-                </div>
-                <ul class="features-list">
-                    <li><i class="fas fa-check"></i> 5 Bot Deployments</li>
-                    <li><i class="fas fa-check"></i> 2GB Storage</li>
-                    <li><i class="fas fa-check"></i> Priority Support</li>
-                    <li><i class="fas fa-check"></i> 99.5% Uptime</li>
-                    <li><i class="fas fa-check"></i> Auto Backups</li>
-                    <li><i class="fas fa-check"></i> Custom Domains</li>
-                </ul>
-                <button class="btn-primary">Get Pro</button>
-            </div>
-            
-            <div class="pricing-card" data-aos="flip-right">
-                <div class="pricing-header">
-                    <h3>ULTIMATE</h3>
-                    <div class="price">
-                        <span class="currency">$</span>
-                        <span class="amount">29.99</span>
-                        <span class="period">/month</span>
-                    </div>
-                    <p>For enterprise scale</p>
-                </div>
-                <ul class="features-list">
-                    <li><i class="fas fa-check"></i> Unlimited Bots</li>
-                    <li><i class="fas fa-check"></i> 10GB Storage</li>
-                    <li><i class="fas fa-check"></i> 24/7 VIP Support</li>
-                    <li><i class="fas fa-check"></i> 99.9% Uptime</li>
-                    <li><i class="fas fa-check"></i> DDoS Protection</li>
-                    <li><i class="fas fa-check"></i> Custom Solutions</li>
-                </ul>
-                <button class="btn-outline">Contact Sales</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Dashboard Preview -->
-    <section id="dashboard" class="dashboard-section">
-        <div class="section-header">
-            <h2 class="section-title">Powerful <span class="gradient-text">Dashboard</span></h2>
-            <p class="section-subtitle">Manage all your bots from one place</p>
-        </div>
-        
-        <div class="dashboard-preview">
-            <div class="dashboard-header">
-                <div class="user-info">
-                    <img src="logo.png" alt="User Avatar" class="user-avatar">
-                    <div>
-                        <h4>Ultimate Flow Admin</h4>
-                        <p>Premium Member</p>
-                    </div>
-                </div>
-                <button class="btn-primary" onclick="openDashboard()">
-                    <i class="fas fa-external-link-alt"></i> Open Dashboard
-                </button>
-            </div>
-            
-            <div class="dashboard-grid">
-                <div class="metric-card">
-                    <h5>Active Bots</h5>
-                    <div class="metric-value">12</div>
-                    <div class="metric-change positive">
-                        <i class="fas fa-arrow-up"></i> 3 new this week
-                    </div>
-                </div>
-                
-                <div class="metric-card">
-                    <h5>Uptime</h5>
-                    <div class="metric-value">99.9%</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 99.9%"></div>
-                    </div>
-                </div>
-                
-                <div class="metric-card">
-                    <h5>CPU Usage</h5>
-                    <div class="metric-value">42%</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 42%"></div>
-                    </div>
-                </div>
-                
-                <div class="metric-card">
-                    <h5>Memory</h5>
-                    <div class="metric-value">3.2GB</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 64%"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bots-list">
-                <h5>Recent Bot Activity</h5>
-                <div class="bot-item active">
-                    <div class="bot-info">
-                        <i class="fas fa-robot"></i>
-                        <div>
-                            <h6>@zen_xbot</h6>
-                            <p>Main Hosting Bot</p>
+                    
+                    <!-- Hero Image (Hidden on very small screens) -->
+                    <div class="hero-image">
+                        <div class="phone-mockup">
+                            <div class="phone-screen">
+                                <div class="bot-control">
+                                    <div class="bot-header">
+                                        <div class="bot-avatar">
+                                            <i class="fas fa-robot"></i>
+                                        </div>
+                                        <div class="bot-info">
+                                            <h4>@zen_xbot</h4>
+                                            <div class="status online">
+                                                <span class="dot"></span>
+                                                Online
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bot-metrics">
+                                        <div class="metric">
+                                            <i class="fas fa-microchip"></i>
+                                            <span>CPU: 24%</span>
+                                        </div>
+                                        <div class="metric">
+                                            <i class="fas fa-memory"></i>
+                                            <span>RAM: 512MB</span>
+                                        </div>
+                                    </div>
+                                    <div class="bot-actions">
+                                        <button class="action-btn">
+                                            <i class="fas fa-play"></i>
+                                            Start
+                                        </button>
+                                        <button class="action-btn">
+                                            <i class="fas fa-cog"></i>
+                                            Settings
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="bot-status">
-                        <span class="status-badge active">Running</span>
-                        <span class="uptime">Uptime: 7d 14h</span>
-                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trusted By Section -->
+        <section class="trusted-section">
+            <div class="container">
+                <div class="section-header">
+                    <p class="section-subtitle">Trusted by 10,000+ Developers</p>
+                </div>
+                <div class="trusted-logos">
+                    <div class="logo-item">🤖</div>
+                    <div class="logo-item">🚀</div>
+                    <div class="logo-item">⚡</div>
+                    <div class="logo-item">🛡️</div>
+                    <div class="logo-item">🔧</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section (Mobile Optimized) -->
+        <section id="features" class="features-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Why Choose <span class="gradient-text">Ultimate Flow</span></h2>
+                    <p class="section-subtitle">Everything you need for perfect bot hosting</p>
                 </div>
                 
-                <div class="bot-item">
-                    <div class="bot-info">
-                        <i class="fas fa-robot"></i>
-                        <div>
-                            <h6>@rx_nahin_bot</h6>
-                            <p>Customer Support</p>
+                <div class="features-grid">
+                    <!-- Feature 1 -->
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3>Lightning Fast</h3>
+                        <p>Global CDN, optimized servers, and instant deployment for maximum performance.</p>
+                        <div class="feature-tags">
+                            <span class="tag">0.2s Response</span>
+                            <span class="tag">99.9% Uptime</span>
                         </div>
                     </div>
-                    <div class="bot-status">
-                        <span class="status-badge">Stopped</span>
-                        <button class="btn-small" onclick="startBot(this)">Start</button>
+                    
+                    <!-- Feature 2 -->
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Military Security</h3>
+                        <p>End-to-end encryption, DDoS protection, and secure isolated environments.</p>
+                        <div class="feature-tags">
+                            <span class="tag">SSL/TLS</span>
+                            <span class="tag">DDoS Protection</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Feature 3 -->
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Live Analytics</h3>
+                        <p>Real-time monitoring, detailed statistics, and performance insights.</p>
+                        <div class="feature-tags">
+                            <span class="tag">Real-time</span>
+                            <span class="tag">24/7 Monitoring</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Feature 4 -->
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3>Auto Deployment</h3>
+                        <p>One-click deployment, automatic updates, and seamless integration.</p>
+                        <div class="feature-tags">
+                            <span class="tag">One-click</span>
+                            <span class="tag">Auto Updates</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Feature 5 -->
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <h3>24/7 Uptime</h3>
+                        <p>99.9% SLA guarantee, automatic failover, and redundant infrastructure.</p>
+                        <div class="feature-tags">
+                            <span class="tag">99.9% SLA</span>
+                            <span class="tag">Redundant</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Feature 6 -->
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h3>Priority Support</h3>
+                        <p>24/7 expert support, Telegram group access, and dedicated assistance.</p>
+                        <div class="feature-tags">
+                            <span class="tag">24/7 Support</span>
+                            <span class="tag">Telegram Group</span>
+                        </div>
                     </div>
                 </div>
+                
+                <!-- Feature Comparison -->
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Basic</th>
+                                <th>Pro</th>
+                                <th>Enterprise</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Bot Limit</td>
+                                <td>1</td>
+                                <td>5</td>
+                                <td>Unlimited</td>
+                            </tr>
+                            <tr>
+                                <td>Storage</td>
+                                <td>100MB</td>
+                                <td>2GB</td>
+                                <td>10GB</td>
+                            </tr>
+                            <tr>
+                                <td>Support</td>
+                                <td>Basic</td>
+                                <td>Priority</td>
+                                <td>24/7 VIP</td>
+                            </tr>
+                            <tr>
+                                <td>Uptime</td>
+                                <td>95%</td>
+                                <td>99.5%</td>
+                                <td>99.9%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="contact-section">
-        <div class="section-header">
-            <h2 class="section-title">Get In <span class="gradient-text">Touch</span></h2>
-            <p class="section-subtitle">We're here to help you succeed</p>
-        </div>
-        
-        <div class="contact-container">
-            <div class="contact-info">
-                <div class="info-card">
-                    <div class="info-icon">
-                        <i class="fas fa-envelope"></i>
+        <!-- Pricing Section (Mobile Swipeable) -->
+        <section id="pricing" class="pricing-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Simple & Transparent <span class="gradient-text">Pricing</span></h2>
+                    <p class="section-subtitle">No hidden fees, cancel anytime</p>
+                </div>
+                
+                <div class="pricing-slider">
+                    <div class="pricing-cards" id="pricingCards">
+                        <!-- Starter Plan -->
+                        <div class="pricing-card">
+                            <div class="plan-badge">FREE</div>
+                            <div class="plan-header">
+                                <h3>STARTER</h3>
+                                <div class="price">
+                                    <sup>$</sup>0<span>/month</span>
+                                </div>
+                                <p>Perfect for beginners</p>
+                            </div>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> 1 Bot Deployment</li>
+                                <li><i class="fas fa-check"></i> 100MB Storage</li>
+                                <li><i class="fas fa-check"></i> Basic Support</li>
+                                <li><i class="fas fa-check"></i> 95% Uptime</li>
+                            </ul>
+                            <button class="btn-outline btn-block">Get Started Free</button>
+                        </div>
+                        
+                        <!-- Pro Plan (Popular) -->
+                        <div class="pricing-card popular">
+                            <div class="plan-badge">POPULAR</div>
+                            <div class="plan-header">
+                                <h3>PRO</h3>
+                                <div class="price">
+                                    <sup>$</sup>9.99<span>/month</span>
+                                </div>
+                                <p>Most Popular Choice</p>
+                            </div>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> 5 Bot Deployments</li>
+                                <li><i class="fas fa-check"></i> 2GB Storage</li>
+                                <li><i class="fas fa-check"></i> Priority Support</li>
+                                <li><i class="fas fa-check"></i> 99.5% Uptime</li>
+                                <li><i class="fas fa-check"></i> Auto Backups</li>
+                            </ul>
+                            <button class="btn-primary btn-block">Get Pro Plan</button>
+                        </div>
+                        
+                        <!-- Enterprise Plan -->
+                        <div class="pricing-card">
+                            <div class="plan-badge">ENTERPRISE</div>
+                            <div class="plan-header">
+                                <h3>ULTIMATE</h3>
+                                <div class="price">
+                                    <sup>$</sup>29.99<span>/month</span>
+                                </div>
+                                <p>For serious projects</p>
+                            </div>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> Unlimited Bots</li>
+                                <li><i class="fas fa-check"></i> 10GB Storage</li>
+                                <li><i class="fas fa-check"></i> 24/7 VIP Support</li>
+                                <li><i class="fas fa-check"></i> 99.9% Uptime</li>
+                                <li><i class="fas fa-check"></i> DDoS Protection</li>
+                            </ul>
+                            <button class="btn-outline btn-block">Contact Sales</button>
+                        </div>
                     </div>
-                    <div class="info-content">
-                        <h5>Email</h5>
-                        <a href="mailto:riadalhasan202@gmail.com">riadalhasan202@gmail.com</a>
+                    
+                    <!-- Slider Dots -->
+                    <div class="slider-dots">
+                        <span class="dot active" data-slide="0"></span>
+                        <span class="dot" data-slide="1"></span>
+                        <span class="dot" data-slide="2"></span>
                     </div>
                 </div>
                 
-                <div class="info-card">
-                    <div class="info-icon">
-                        <i class="fab fa-telegram"></i>
-                    </div>
-                    <div class="info-content">
-                        <h5>Telegram</h5>
-                        <a href="https://t.me/zerox6t9" target="_blank">@zerox6t9</a>
-                    </div>
-                </div>
-                
-                <div class="info-card">
-                    <div class="info-icon">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <div class="info-content">
-                        <h5>Hosting Bot</h5>
-                        <a href="https://t.me/zen_xbot" target="_blank">@zen_xbot</a>
-                    </div>
-                </div>
-                
-                <div class="info-card">
-                    <div class="info-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <div class="info-content">
-                        <h5>Support</h5>
-                        <p>24/7 Technical Assistance</p>
+                <!-- FAQ Section -->
+                <div class="faq-section">
+                    <h3>Frequently Asked Questions</h3>
+                    <div class="faq-list">
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                How do I deploy my bot?
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                Simply upload your Python file through our dashboard or use our API. We handle everything else automatically.
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                Can I cancel anytime?
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                Yes! You can cancel your subscription anytime. No questions asked.
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                Is there a free trial?
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-answer">
+                                Yes! All paid plans come with a 14-day free trial. No credit card required.
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="contact-form">
-                <h4>Send us a message</h4>
-                <form id="contactForm">
-                    <div class="form-group">
-                        <input type="text" placeholder="GETOU" required>
+        </section>
+
+        <!-- Dashboard Preview -->
+        <section id="dashboard" class="dashboard-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Powerful <span class="gradient-text">Dashboard</span></h2>
+                    <p class="section-subtitle">Manage everything from your phone</p>
+                </div>
+                
+                <div class="dashboard-preview">
+                    <div class="dashboard-stats">
+                        <div class="stat">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Active Bots</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">99.9%</div>
+                            <div class="stat-label">Uptime</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">42%</div>
+                            <div class="stat-label">CPU Usage</div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <input type="email" placeholder="riadalhasan202@gmail.com" required>
+                    
+                    <!-- Active Bots List -->
+                    <div class="bots-list">
+                        <h4>Active Bots</h4>
+                        <div class="bot-item">
+                            <div class="bot-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="bot-details">
+                                <h5>@zen_xbot</h5>
+                                <p>Main Hosting Bot</p>
+                                <div class="bot-status">
+                                    <span class="status online"></span>
+                                    <span>Running • Uptime: 7d 14h</span>
+                                </div>
+                            </div>
+                            <button class="bot-action" onclick="manageBot(this)">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="bot-item">
+                            <div class="bot-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="bot-details">
+                                <h5>@support_bot</h5>
+                                <p>Customer Support</p>
+                                <div class="bot-status">
+                                    <span class="status offline"></span>
+                                    <span>Stopped</span>
+                                </div>
+                            </div>
+                            <button class="bot-action" onclick="startBot(this)">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <textarea placeholder="contact us" rows="5" required></textarea>
+                    
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <button class="action-btn" onclick="deployNewBot()">
+                            <i class="fas fa-plus"></i>
+                            <span>Deploy New Bot</span>
+                        </button>
+                        <button class="action-btn" onclick="openAnalytics()">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>View Analytics</span>
+                        </button>
+                        <button class="action-btn" onclick="openSettings()">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </button>
                     </div>
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-paper-plane"></i> Send Message
-                    </button>
-                </form>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Get In <span class="gradient-text">Touch</span></h2>
+                    <p class="section-subtitle">We're here to help you 24/7</p>
+                </div>
+                
+                <div class="contact-wrapper">
+                    <!-- Contact Info -->
+                    <div class="contact-info">
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="info-content">
+                                <h5>Email</h5>
+                                <a href="mailto:riadalhasan202@gmail.com" class="contact-link">
+                                    riadalhasan202@gmail.com
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fab fa-telegram"></i>
+                            </div>
+                            <div class="info-content">
+                                <h5>Telegram</h5>
+                                <a href="https://t.me/zerox6t9" target="_blank" class="contact-link">
+                                    @zerox6t9
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="info-content">
+                                <h5>Hosting Bot</h5>
+                                <a href="https://t.me/zen_xbot" target="_blank" class="contact-link">
+                                    @zen_xbot
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <div class="info-content">
+                                <h5>Support Hours</h5>
+                                <p>24/7 Technical Support</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Form -->
+                    <div class="contact-form">
+                        <h4>Send us a message</h4>
+                        <form id="contactForm" novalidate>
+                            <div class="form-group">
+                                <label for="name">Your Name</label>
+                                <input type="text" id="name" name="name" required placeholder="Enter your name">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" required placeholder="Enter your email">
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Your Message</label>
+                                <textarea id="message" name="message" rows="4" required placeholder="How can we help you?"></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary btn-block">
+                                <i class="fas fa-paper-plane"></i> Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-content">
+                    <h2>Ready to Launch Your Bot?</h2>
+                    <p>Join thousands of developers who trust Ultimate Flow for their bot hosting needs.</p>
+                    <div class="cta-buttons">
+                        <button class="btn-primary btn-large" onclick="launchBot()">
+                            <i class="fas fa-rocket"></i> Launch @zen_xbot Now
+                        </button>
+                        <button class="btn-secondary btn-large" onclick="scrollToContact()">
+                            <i class="fas fa-question-circle"></i> Need Help?
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-brand">
-                <img src="logo.png" alt="Ultimate Flow Logo" class="footer-logo">
-                <h3>ULTIMATE FLOW</h3>
-                <p>Premium Cyber Bot Hosting Platform</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-telegram"></i></a>
-                    <a href="#"><i class="fab fa-github"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-discord"></i></a>
+        <div class="container">
+            <div class="footer-content">
+                <!-- Brand Column -->
+                <div class="footer-col">
+                    <div class="footer-brand">
+                        <img 
+                            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🤖%3C/text%3E%3C/svg%3E" 
+                            data-src="logo.png" 
+                            alt="Ultimate Flow Logo" 
+                            class="footer-logo lazy"
+                            width="60"
+                            height="60"
+                            loading="lazy"
+                        >
+                        <h3>ULTIMATE FLOW</h3>
+                        <p>Premium Cyber Bot Hosting</p>
+                    </div>
+                    
+                    <div class="social-links">
+                        <a href="#" aria-label="Telegram" class="social-link">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        <a href="#" aria-label="Twitter" class="social-link">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" aria-label="GitHub" class="social-link">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" aria-label="Discord" class="social-link">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Links Columns -->
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <a href="#features">Features</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#dashboard">Dashboard</a>
+                    <a href="#">API Docs</a>
+                    <a href="#">Status</a>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <a href="#about">About Us</a>
+                    <a href="#contact">Contact</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Press</a>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                    <a href="#">GDPR</a>
+                    <a href="#">Security</a>
                 </div>
             </div>
             
-            <div class="footer-links">
-                <h5>Quick Links</h5>
-                <a href="#home">Home</a>
-                <a href="#features">Features</a>
-                <a href="#pricing">Pricing</a>
-                <a href="#dashboard">Dashboard</a>
-                <a href="#contact">Contact</a>
+            <div class="footer-bottom">
+                <p>&copy; 2024 <span class="gradient-text">Ultimate Flow</span>. All rights reserved.</p>
+                <p class="copyright">
+                    All copyright by <strong>Cyber Host</strong> and <strong>Ultimate Flow</strong>
+                    <br>
+                    Designed with <i class="fas fa-heart" style="color: #ff4757;"></i> for mobile
+                </p>
             </div>
-            
-            <div class="footer-links">
-                <h5>Resources</h5>
-                <a href="#">Documentation</a>
-                <a href="#">API Reference</a>
-                <a href="#">Tutorials</a>
-                <a href="#">Blog</a>
-                <a href="#">Status</a>
-            </div>
-            
-            <div class="footer-links">
-                <h5>Legal</h5>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Cookie Policy</a>
-                <a href="#">GDPR</a>
-                <a href="#">Compliance</a>
-            </div>
-        </div>
-        
-        <div class="footer-bottom">
-            <p>&copy; 2024 <span class="gradient-text">Ultimate Flow</span> - Cyber Bot Hosting. All rights reserved.</p>
-            <p class="copyright">
-                All copyright by <strong>Cyber Host</strong> and <strong>Ultimate Flow</strong>
-                <br>
-                Designed with <i class="fas fa-heart" style="color: #ff4757;"></i> for the bot community
-            </p>
         </div>
     </footer>
 
-    <!-- Launch Bot Modal -->
+    <!-- Launch Modal -->
     <div class="modal" id="launchModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-rocket"></i> Launch Your Bot</h3>
-                <button class="close-modal" onclick="closeModal()">&times;</button>
+                <h3>
+                    <i class="fas fa-rocket"></i>
+                    Launching @zen_xbot
+                </h3>
+                <button class="modal-close" onclick="closeModal()" aria-label="Close">
+                    &times;
+                </button>
             </div>
             <div class="modal-body">
-                <p>Launching <strong>@zen_xbot</strong>...</p>
                 <div class="launch-progress">
                     <div class="progress-bar">
-                        <div class="progress-fill" id="launchProgress"></div>
+                        <div class="progress" id="launchProgress"></div>
                     </div>
-                    <div class="progress-steps">
-                        <span class="step active">Initializing</span>
-                        <span class="step">Connecting</span>
-                        <span class="step">Deploying</span>
-                        <span class="step">Ready</span>
+                    <div class="progress-text" id="progressText">Initializing...</div>
+                </div>
+                
+                <div class="terminal">
+                    <div class="terminal-output" id="terminalOutput">
+                        > Waiting for launch command...
                     </div>
                 </div>
-                <div class="terminal-output">
-                    <pre id="launchTerminal">> Waiting for launch command...</pre>
+                
+                <div class="launch-info">
+                    <p><i class="fas fa-info-circle"></i> Bot will be available at: <strong>@zen_xbot</strong></p>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-primary" onclick="proceedLaunch()">
+                <button class="btn-primary btn-block" onclick="startLaunch()">
                     <i class="fas fa-play"></i> Start Launch
                 </button>
-                <button class="btn-outline" onclick="closeModal()">Cancel</button>
+                <button class="btn-outline btn-block" onclick="closeModal()">
+                    Cancel
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <script src="script.js"></script>
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Install PWA Prompt -->
+    <div class="install-prompt" id="installPrompt">
+        <div class="prompt-content">
+            <div class="prompt-icon">
+                <i class="fas fa-download"></i>
+            </div>
+            <div class="prompt-text">
+                <h5>Install Ultimate Flow</h5>
+                <p>Add to home screen for faster access</p>
+            </div>
+            <button class="prompt-close" onclick="hideInstallPrompt()">
+                &times;
+            </button>
+        </div>
+        <button class="btn-primary prompt-install" onclick="installPWA()">
+            Install
+        </button>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Scripts (Deferred for faster loading) -->
+    <script src="script.js" defer></script>
+    
+    <!-- Inline critical JavaScript -->
+    <script>
+        // Immediately set theme to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+            }
+            
+            // Hide loading spinner when page loads
+            window.addEventListener('load', function() {
+                const spinner = document.getElementById('loadingSpinner');
+                if (spinner) spinner.style.display = 'none';
+            });
+            
+            // Set timeout for loading spinner
+            setTimeout(function() {
+                const spinner = document.getElementById('loadingSpinner');
+                if (spinner) spinner.style.display = 'none';
+            }, 3000);
+        })();
+    </script>
 </body>
 </html>
